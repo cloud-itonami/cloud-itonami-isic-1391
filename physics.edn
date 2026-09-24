@@ -1,0 +1,33 @@
+;; What this vertical's robot physically does, declared for
+;; kotoba.robotics.process (kotoba-lang/robotics). `kbb -M:dev:physics` runs it.
+;;
+;; README has no "Robotics premise" section. The knitting mill runs
+;; circular/flat knitting machines. Its physical work here: loading yarn cones
+;; into a circular knitting machine's creel, and carrying doffed greige-fabric
+;; rolls from the machines to fabric inspection.
+;;
+;; Every number without a cited source is marked `estimate` in its :basis.
+;; Replacing an estimate with a sourced value is this bot's growth work.
+{:physics/schema "itonami.physical-ai.spec.v1"
+ :repo "cloud-itonami/cloud-itonami-isic-1391"
+ :cases
+ [{:id :yarn-cone-to-creel
+   :kind :manipulator
+   :procedure "arm lifts a yarn cone from the cone trolley onto the top tier of a circular knitting machine's side creel"
+   :params {:l1-m 0.50 :l2-m 0.45 :m1-kg 5.0 :m2-kg 3.5
+            :from [0.60 0.00] :to [0.25 0.85] :duration-s 1.8 :steps 400}
+   :sweep {:param :payload-kg :values [0.5 1.0 1.5 2.0 2.5]}
+   :quantity :peak-tau1-nm
+   :limit {:max 50.0 :basis "estimate: continuous shoulder torque of a light collaborative arm (~5 kg class)"}
+   :boundary {:lo 0.1 :hi 30.0}}
+  {:id :fabric-rolls-to-inspection
+   :kind :transport
+   :procedure "AMR carries doffed greige knitted-fabric rolls from the knitting machines to the fabric inspection frame"
+   :params {:mass-kg 70.0 :distance-m 50.0 :v-max-mps 1.2 :a-max-mps2 0.6
+            :brake-decel-mps2 1.0 :drive-force-n 180.0 :crr 0.015
+            :cog-height-m 0.30 :payload-cog-height-m 0.60 :support-half-length-m 0.30
+            :max-time-s 1200.0}
+   :sweep {:param :payload-kg :values [25.0 50.0 100.0 150.0 200.0]}
+   :quantity :cycle-time-s
+   :limit {:max 45.0 :basis "estimate: one inspection-feed leg per machine doff interval"}
+   :boundary {:lo 10.0 :hi 1000.0}}]}
